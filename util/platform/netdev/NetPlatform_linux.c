@@ -39,7 +39,12 @@
 #endif
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+
+#if defined(freetz)||defined(__UCLIBC__)
+#include <linux/if.h>
+#else
 #include <net/if.h>
+#endif
 
 // Way to identify our routes as opposed to statically created or otherwise...
 #define RTPROT_CJDNS 52

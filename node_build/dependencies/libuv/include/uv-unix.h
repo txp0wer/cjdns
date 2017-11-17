@@ -123,6 +123,10 @@ typedef int uv_os_file_t;
 
 #define UV_ONCE_INIT PTHREAD_ONCE_INIT
 
+#ifdef __UCLIBC__
+#include "pthread-hack.h"
+#endif
+
 typedef pthread_once_t uv_once_t;
 typedef pthread_t uv_thread_t;
 typedef pthread_mutex_t uv_mutex_t;
@@ -131,7 +135,7 @@ typedef UV_PLATFORM_SEM_T uv_sem_t;
 typedef pthread_cond_t uv_cond_t;
 typedef pthread_key_t uv_key_t;
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__)
 
 typedef struct {
   unsigned int n;
@@ -141,11 +145,11 @@ typedef struct {
   uv_sem_t turnstile2;
 } uv_barrier_t;
 
-#else /* defined(__APPLE__) && defined(__MACH__) */
+#else /* (defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__) */
 
 typedef pthread_barrier_t uv_barrier_t;
 
-#endif /* defined(__APPLE__) && defined(__MACH__) */
+#endif /* (defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__) */
 
 /* Platform-specific definitions for uv_spawn support. */
 typedef gid_t uv_gid_t;

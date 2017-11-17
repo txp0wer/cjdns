@@ -32,7 +32,9 @@
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <linux/if_ether.h>
+#ifndef __UCLIBC__
 #include <net/if.h>
+#endif
 
 #if defined(android)
   #define DEVICE_PATH "/dev/tun"

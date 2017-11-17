@@ -38,7 +38,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#ifndef android
+#if ! ( defined(android) || defined(freetz) || defined(__UCLIBC__) )
     #include <ifaddrs.h>
 #endif
 
@@ -207,7 +207,7 @@ static void handleEvent(void* vcontext)
 List* ETHInterface_listDevices(struct Allocator* alloc, struct Except* eh)
 {
     List* out = List_new(alloc);
-#ifndef android
+#if ! ( defined(android) || defined(freetz) || defined(__UCLIBC__) )
     struct ifaddrs* ifaddr = NULL;
     if (getifaddrs(&ifaddr) || ifaddr == NULL) {
         Except_throw(eh, "getifaddrs() -> errno:%d [%s]", errno, strerror(errno));

@@ -25,6 +25,10 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __UCLIBC__
+#include <asm/spinlock.h>
+#endif
+#include <pthread.h>
 
 struct poll_ctx {
   uv_fs_poll_t* parent_handle; /* NULL if parent has been stopped or closed */

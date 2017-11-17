@@ -280,7 +280,7 @@ int uv_cond_init(uv_cond_t* cond) {
   if (err)
     return -err;
 
-#if !(defined(__ANDROID__) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC))
+#if !((defined(__ANDROID__) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)) || defined(__UCLIBC__))
   err = pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
   if (err)
     goto error2;
@@ -361,7 +361,7 @@ int uv_cond_timedwait(uv_cond_t* cond, uv_mutex_t* mutex, uint64_t timeout) {
 }
 
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__)
 
 int uv_barrier_init(uv_barrier_t* barrier, unsigned int count) {
   int err;
@@ -421,7 +421,7 @@ void uv_barrier_wait(uv_barrier_t* barrier) {
   uv_sem_post(&barrier->turnstile2);
 }
 
-#else /* !(defined(__APPLE__) && defined(__MACH__)) */
+#else /* !((defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__)) */
 
 int uv_barrier_init(uv_barrier_t* barrier, unsigned int count) {
   return -pthread_barrier_init(barrier, NULL, count);
@@ -440,7 +440,7 @@ void uv_barrier_wait(uv_barrier_t* barrier) {
     abort();
 }
 
-#endif /* defined(__APPLE__) && defined(__MACH__) */
+#endif /* (defined(__APPLE__) && defined(__MACH__)) || defined(__UCLIBC__) */
 
 int uv_key_create(uv_key_t* key) {
   return -pthread_key_create(key, NULL);

@@ -58,6 +58,9 @@ extern "C" {
 # include "uv-win.h"
 #else
 # include "uv-unix.h"
+# ifdef __UCLIBC__
+#  include <sys/types.h>
+# endif
 #endif
 
 /* Expand this list if necessary. */

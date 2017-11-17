@@ -542,27 +542,29 @@ static void uv__to_stat(struct stat* src, uv_stat_t* dst) {
   dst->st_flags = src->st_flags;
   dst->st_gen = src->st_gen;
 #elif !defined(__ANDROID__) && (defined(_BSD_SOURCE) || defined(_SVID_SOURCE) || defined(_XOPEN_SOURCE))
+# ifndef __UCLIBC__
   dst->st_atim.tv_sec = src->st_atim.tv_sec;
   dst->st_atim.tv_nsec = src->st_atim.tv_nsec;
   dst->st_mtim.tv_sec = src->st_mtim.tv_sec;
   dst->st_mtim.tv_nsec = src->st_mtim.tv_nsec;
   dst->st_ctim.tv_sec = src->st_ctim.tv_sec;
   dst->st_ctim.tv_nsec = src->st_ctim.tv_nsec;
-# if defined(__DragonFly__)  || \
-     defined(__FreeBSD__)    || \
-     defined(__OpenBSD__)    || \
-     defined(__NetBSD__)
+#  if defined(__DragonFly__)  || \
+      defined(__FreeBSD__)    || \
+      defined(__OpenBSD__)    || \
+      defined(__NetBSD__)
   dst->st_birthtim.tv_sec = src->st_birthtim.tv_sec;
   dst->st_birthtim.tv_nsec = src->st_birthtim.tv_nsec;
   dst->st_flags = src->st_flags;
   dst->st_gen = src->st_gen;
-# else
+#  else /* no BSD */
   dst->st_birthtim.tv_sec = src->st_ctim.tv_sec;
   dst->st_birthtim.tv_nsec = src->st_ctim.tv_nsec;
   dst->st_flags = 0;
   dst->st_gen = 0;
-# endif
-#else
+#  endif /* BSD */
+# endif /* __UCLIBC__ */
+#elif !defined(__UCLIBC__)
   dst->st_atim.tv_sec = src->st_atime;
   dst->st_atim.tv_nsec = 0;
   dst->st_mtim.tv_sec = src->st_mtime;
@@ -571,6 +573,7 @@ static void uv__to_stat(struct stat* src, uv_stat_t* dst) {
   dst->st_ctim.tv_nsec = 0;
   dst->st_birthtim.tv_sec = src->st_ctime;
   dst->st_birthtim.tv_nsec = 0;
+#else
   dst->st_flags = 0;
   dst->st_gen = 0;
 #endif
