@@ -44,16 +44,29 @@ Dict* Security_getUser(char* userName, struct Allocator* retAlloc)
         pw = getpwuid(getuid());
     }
     Dict* ret = Dict_new(retAlloc);
+#ifndef freetz
     if (!pw) {
         Dict_putString(ret, String_new("error", retAlloc),
                             String_printf(retAlloc, "Could not find user [%s]", strerror(errno)),
                             retAlloc);
         return ret;
     }
+#endif
     Dict_putString(ret, String_new("error", retAlloc), String_new("none", retAlloc), retAlloc);
-    Dict_putString(ret, String_new("name", retAlloc), String_new(pw->pw_name, retAlloc), retAlloc);
-    Dict_putInt(ret, String_new("uid", retAlloc), pw->pw_uid, retAlloc);
-    Dict_putInt(ret, String_new("gid", retAlloc), pw->pw_gid, retAlloc);
+#ifdef freetz
+    if (!pw) {
+#endif
+        Dict_putString(ret, String_new("name", retAlloc), String_new("root", retAlloc), retAlloc);
+        Dict_putInt(ret, String_new("uid", retAlloc), 0, retAlloc);
+        Dict_putInt(ret, String_new("gid", retAlloc), 0, retAlloc);
+#ifdef freetz
+    } else {
+        Dict_putString(ret, String_new("name", retAlloc), String_new(pw->pw_name, retAlloc),
+                                                                     retAlloc);
+        Dict_putInt(ret, String_new("uid", retAlloc), pw->pw_uid, retAlloc);
+        Dict_putInt(ret, String_new("gid", retAlloc), pw->pw_gid, retAlloc);
+    }
+#endif
     return ret;
 }
 
